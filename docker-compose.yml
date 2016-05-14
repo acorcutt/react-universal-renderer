@@ -1,0 +1,15 @@
+version: "2"
+services:
+  sso:
+    build: .
+    image: react-universal-renderer
+    environment:
+      - NODE_ENV=development      
+      - VIRTUAL_HOST=react-universal-renderer.dev
+      - VIRTUAL_PORT=80
+    expose:
+      - "80"
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/usr/src/react-universal-renderer
