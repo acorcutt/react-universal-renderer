@@ -21,11 +21,16 @@ Simple example to do an async request on the server and render the result. We us
 
 ## Usage
 
+### Install
+```
+npm install react-universal-renderer --save
+```
+
 ###  serverRenderer(App,states,script,callback)
 ```
 let store = {};
 
-serverRenderer(<App store={store} />, {__STORE: store, '/scripts/client.js', (err, html) => {
+serverRenderer(<App store={store} />, { __STORE: store }, '/scripts/client.js', (err, html) => {
     if (err) {
       return next(err);
     }
