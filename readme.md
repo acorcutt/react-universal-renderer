@@ -30,7 +30,7 @@ npm install react-universal-renderer --save
 ```
 let store = {};
 
-serverRenderer(<App store={store} />, { __STORE: store }, '/scripts/client.js', (err, html) => {
+serverRenderer(<App store={store} />, { __STORE: () => store }, '/scripts/client.js', (err, html) => {
     if (err) {
       return next(err);
     }
