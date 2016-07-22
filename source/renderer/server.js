@@ -25,15 +25,17 @@ export default function(App, states, script, next) {
 
   // We then need to wait for all promises to finish and re-render with the state it generated!
   Promise.all(promises).then(() => {
+    // Re-render the body with the new state
+    const body = ReactDOM.renderToString(Body);
+
+    // Get the current head
+    const head = Helmet.rewind();
 
     // And by magic the re-render of the body should have the store pre-loaded with the results from the promises!
-    let html = <Html body={Body} states={states} script={script} />;
+    let html = <Html body={body} head={head} states={states} script={script} />;
 
-    // Re-render with the new state
+    // Render html
     let markup = '<!doctype html>\n' + ReactDOM.renderToStaticMarkup(html);
-
-    // Get the current header to pass to callback
-    const head = Helmet.rewind();
 
     // Call the callback
     if (next) {
@@ -46,23 +48,24 @@ export default function(App, states, script, next) {
 
 /**
  * Wrapper component for generating server response
- * @ body - if supplied will render server generated body to the output
+ * @ body - body string to render
+ * @ head - Helmet head components
  * @ state - state to serialize and sync for client side render
  * @ script - the react app script to place after the body tag
  */
 class Html extends Component {
   static propTypes = {
-    body: PropTypes.node,
+    body: PropTypes.string,
+    head: PropTypes.object,
     states: PropTypes.object,
     script: PropTypes.string,
   };
 
   render() {
-    const head = Helmet.rewind();
+    const {body, states, script, head} = this.props;
     const attrs = head.htmlAttributes.toComponent();
-
-    const {body, states, script} = this.props;
     const clientScript = script ? <script src={script} type="text/javascript" defer charSet="UTF-8" /> : null;
+    
     return (
       <html {...attrs}>
         <head>
@@ -75,7 +78,7 @@ class Html extends Component {
         </head>
         <body>
           <div id="content" dangerouslySetInnerHTML={{
-        __html: body ? ReactDOM.renderToString(body) : ''
+        __html: body
       }}/>          
           {Object.keys(states).map((key) => <script key={key} dangerouslySetInnerHTML={{
           __html: `window["${key}"]=${JSON.stringify(states[key]())};`

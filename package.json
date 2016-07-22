@@ -1,6 +1,6 @@
 {
   "name": "react-universal-renderer",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "React Universal Renderer",
   "author": "Anthony Corcutt <acorcutt@gmail.com>",
   "main": "build/index.js",

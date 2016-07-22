@@ -29,15 +29,17 @@ exports.default = function (App, states, script, next) {
 
   // We then need to wait for all promises to finish and re-render with the state it generated!
   Promise.all(promises).then(function () {
+    // Re-render the body with the new state
+    var body = _server2.default.renderToString(Body);
+
+    // Get the current head
+    var head = _reactHelmet2.default.rewind();
 
     // And by magic the re-render of the body should have the store pre-loaded with the results from the promises!
-    var html = _react2.default.createElement(Html, { body: Body, states: states, script: script });
+    var html = _react2.default.createElement(Html, { body: body, head: head, states: states, script: script });
 
-    // Re-render with the new state
+    // Render html
     var markup = '<!doctype html>\n' + _server2.default.renderToStaticMarkup(html);
-
-    // Get the current header to pass to callback
-    var head = _reactHelmet2.default.rewind();
 
     // Call the callback
     if (next) {
@@ -81,7 +83,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 /**
  * Wrapper component for generating server response
- * @ body - if supplied will render server generated body to the output
+ * @ body - body string to render
+ * @ head - Helmet head components
  * @ state - state to serialize and sync for client side render
  * @ script - the react app script to place after the body tag
  */
@@ -98,15 +101,15 @@ var Html = function (_Component) {
   _createClass(Html, [{
     key: 'render',
     value: function render() {
-      var head = _reactHelmet2.default.rewind();
-      var attrs = head.htmlAttributes.toComponent();
-
       var _props = this.props;
       var body = _props.body;
       var states = _props.states;
       var script = _props.script;
+      var head = _props.head;
 
+      var attrs = head.htmlAttributes.toComponent();
       var clientScript = script ? _react2.default.createElement('script', { src: script, type: 'text/javascript', defer: true, charSet: 'UTF-8' }) : null;
+
       return _react2.default.createElement(
         'html',
         attrs,
@@ -124,7 +127,7 @@ var Html = function (_Component) {
           'body',
           null,
           _react2.default.createElement('div', { id: 'content', dangerouslySetInnerHTML: {
-              __html: body ? _server2.default.renderToString(body) : ''
+              __html: body
             } }),
           Object.keys(states).map(function (key) {
             return _react2.default.createElement('script', { key: key, dangerouslySetInnerHTML: {
@@ -141,7 +144,8 @@ var Html = function (_Component) {
 }(_react.Component);
 
 Html.propTypes = {
-  body: _react.PropTypes.node,
+  body: _react.PropTypes.string,
+  head: _react.PropTypes.object,
   states: _react.PropTypes.object,
   script: _react.PropTypes.string
 };
