@@ -33,9 +33,15 @@ exports.default = function (App, states, script, next) {
     // And by magic the re-render of the body should have the store pre-loaded with the results from the promises!
     var html = _react2.default.createElement(Html, { body: Body, states: states, script: script });
 
+    // Re-render with the new state
+    var markup = '<!doctype html>\n' + _server2.default.renderToStaticMarkup(html);
+
+    // Get the current header to pass to callback
+    var head = _reactHelmet2.default.rewind();
+
     // Call the callback
     if (next) {
-      next(null, '<!doctype html>\n' + _server2.default.renderToStaticMarkup(html));
+      next(null, markup, head);
     }
   }).catch(function (err) {
     next(err);
@@ -68,6 +74,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 /* Render a universal App on the server
 /* @ App - the root React element.
 /* @ state - object of {key:fn} states to load into window[key] = fn() 
+/* @ script - location of script file
 /* @ next - callback from ReactDOM.render
 /*/
 
@@ -110,7 +117,8 @@ var Html = function (_Component) {
           head.title.toComponent(),
           head.meta.toComponent(),
           head.link.toComponent(),
-          head.script.toComponent()
+          head.script.toComponent(),
+          head.style.toComponent()
         ),
         _react2.default.createElement(
           'body',

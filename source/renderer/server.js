@@ -7,6 +7,7 @@ import { Store, Promises } from './components';
 /* Render a universal App on the server
 /* @ App - the root React element.
 /* @ state - object of {key:fn} states to load into window[key] = fn() 
+/* @ script - location of script file
 /* @ next - callback from ReactDOM.render
 /*/
 export default function(App, states, script, next) {
@@ -26,11 +27,17 @@ export default function(App, states, script, next) {
   Promise.all(promises).then(() => {
 
     // And by magic the re-render of the body should have the store pre-loaded with the results from the promises!
-    var html = <Html body={Body} states={states} script={script} />;
+    let html = <Html body={Body} states={states} script={script} />;
+
+    // Re-render with the new state
+    let markup = '<!doctype html>\n' + ReactDOM.renderToStaticMarkup(html);
+
+    // Get the current header to pass to callback
+    const head = Helmet.rewind();
 
     // Call the callback
     if (next) {
-      next(null, '<!doctype html>\n' + ReactDOM.renderToStaticMarkup(html));
+      next(null, markup, head);
     }
   }).catch((err) => {
     next(err);
@@ -64,6 +71,7 @@ class Html extends Component {
           {head.meta.toComponent()}
           {head.link.toComponent()}
           {head.script.toComponent()}
+          {head.style.toComponent()}
         </head>
         <body>
           <div id="content" dangerouslySetInnerHTML={{

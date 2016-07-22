@@ -6,12 +6,6 @@ Helper for rendering a universal React app on the client & server. This wraps a 
 
 We make two passes when rendering on the server, on the first pass we push any asynchronous request promises onto a stack passed through the context, we then wait for the promises to complete and update any saved state or stores. Then we re-render with this new state and pass it to the client.
 
-## RoadMap
-
-- A better example with routing etc.
-- Add class decorator / connector to access promises.
-- Supprt React Native
-
 ## Examples
 
 ### [React Universal Renderer Example](https://github.com/acorcutt/react-universal-renderer-example)
